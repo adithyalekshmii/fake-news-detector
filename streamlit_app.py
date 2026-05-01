@@ -9,14 +9,12 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 import os
 
-# ── Page config ───────────────────────────────────────────
 st.set_page_config(
     page_title="Fake News Detector",
     page_icon="🔍",
     layout="centered"
 )
 
-# ── Custom CSS ────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
@@ -50,11 +48,6 @@ html, body, [class*="css"] {
     margin-bottom: 30px;
 }
 
-.badge {
-    text-align: center;
-    margin-bottom: 10px;
-}
-
 .result-real {
     background: rgba(0,229,160,0.08);
     border: 1.5px solid rgba(0,229,160,0.3);
@@ -84,29 +77,9 @@ html, body, [class*="css"] {
     font-weight: 800;
     color: #ff4d6d;
 }
-
-.how-box {
-    background: #1a1a26;
-    border: 1px solid #2a2a40;
-    border-radius: 16px;
-    padding: 20px;
-    margin-top: 30px;
-}
-
-.step-title {
-    font-weight: 600;
-    color: #a8a4ff;
-    margin-bottom: 4px;
-}
-
-.step-desc {
-    color: #7070a0;
-    font-size: 13px;
-}
 </style>
 """, unsafe_allow_html=True)
 
-# ── Text cleaning ─────────────────────────────────────────
 def clean_text(text):
     text = text.lower()
     text = re.sub(r'[^a-zA-Z\s]', '', text)
@@ -115,14 +88,12 @@ def clean_text(text):
     words = [w for w in text.split() if w not in stop_words]
     return ' '.join(words)
 
-# ── Train or load model ───────────────────────────────────
 @st.cache_resource
 def load_model():
     if os.path.exists('model.pkl'):
         with open('model.pkl', 'rb') as f:
             return pickle.load(f)
     
-    # Train fresh if no model.pkl
     training_data = [
         ("Scientists confirmed vaccine effectiveness after extensive clinical trials involving 40000 participants.", "REAL"),
         ("The stock market closed higher as investors reacted positively to the latest employment data.", "REAL"),
@@ -180,16 +151,11 @@ def load_model():
     
     return model
 
-# ── Load model ────────────────────────────────────────────
 model = load_model()
-
-# ── UI ────────────────────────────────────────────────────
-st.markdown('<div class="badge"><span style="background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.3);color:#a8a4ff;padding:6px 16px;border-radius:100px;font-size:12px;font-weight:600;letter-spacing:1px;">● NLP PROJECT</span></div>', unsafe_allow_html=True)
 
 st.markdown('<div class="title-text">Fake News Detector</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Paste any news article or headline below to check if it\'s Real or Fake</div>', unsafe_allow_html=True)
 
-# Stats
 col1, col2, col3 = st.columns(3)
 with col1:
     st.metric("Method", "NLP")
@@ -200,7 +166,6 @@ with col3:
 
 st.markdown("---")
 
-# Example buttons
 st.markdown("**🧪 Try an example:**")
 col_r, col_f = st.columns(2)
 with col_r:
@@ -210,7 +175,6 @@ with col_f:
     if st.button("❌ Fake News Example"):
         st.session_state.example = "SHOCKING: Government secretly putting mind control chips in COVID vaccines, a whistleblower reveals! Big Pharma doesn't want you to know this secret!"
 
-# Text input
 default_text = st.session_state.get('example', '')
 news_input = st.text_area(
     "📰 Paste News Article or Headline",
@@ -222,7 +186,6 @@ news_input = st.text_area(
 word_count = len(news_input.strip().split()) if news_input.strip() else 0
 st.caption(f"{word_count} words {'✅' if word_count >= 5 else '⚠️ Need at least 5 words'}")
 
-# Analyze button
 if st.button("🔍 Analyze Article", use_container_width=True, type="primary"):
     if not news_input.strip():
         st.error("Please paste a news article first.")
@@ -261,22 +224,5 @@ if st.button("🔍 Analyze Article", use_container_width=True, type="primary"):
         st.progress(real_prob / 100, text=f"✅ Real News: {real_prob}%")
         st.progress(fake_prob / 100, text=f"❌ Fake News: {fake_prob}%")
 
-# How it works
 st.markdown("---")
-st.markdown("### ⚙️ How It Works")
-c1, c2, c3, c4 = st.columns(4)
-with c1:
-    st.markdown("**1️⃣ Text Filtration**")
-    st.caption("Removes noise, punctuation and stop words")
-with c2:
-    st.markdown("**2️⃣ Tokenization**")
-    st.caption("Splits text into individual word tokens")
-with c3:
-    st.markdown("**3️⃣ N-gram Features**")
-    st.caption("TF-IDF extracts unigram & bigram patterns")
-with c4:
-    st.markdown("**4️⃣ Classification**")
-    st.caption("Logistic Regression predicts Fake or Real")
-
-st.markdown("---")
-st.caption("NLP Subject Project · Built with Python, Scikit-learn & Streamlit")
+st.caption("Fake News Detection · Made by Adithyalekshmi")
